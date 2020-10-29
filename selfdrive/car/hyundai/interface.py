@@ -60,10 +60,10 @@ class CarInterface(CarInterfaceBase):
 
     if opParams().get('Enable_INDI'):
       ret.lateralTuning.init('indi')
-      ret.lateralTuning.indi.outerLoopGain = 3.  # stock is 2.0.  Trying out 2.5
-      ret.lateralTuning.indi.innerLoopGain = 2.
+      ret.lateralTuning.indi.outerLoopGain = 2.2  # stock is 2.0.  Trying out 2.5
+      ret.lateralTuning.indi.innerLoopGain = 3.0
       ret.lateralTuning.indi.timeConstant = 1.4
-      ret.lateralTuning.indi.actuatorEffectiveness = 2.
+      ret.lateralTuning.indi.actuatorEffectiveness = 2.0
 
     if candidate in [CAR.SANTA_FE, CAR.SANTA_FE_2017]:
       ret.mass = 3982. * CV.LB_TO_KG + STD_CARGO_KG
