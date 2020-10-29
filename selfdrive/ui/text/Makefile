@@ -18,21 +18,19 @@ OPENGL_LIBS = -lGLESv3
 
 FRAMEBUFFER_LIBS = -lutils -lgui -lEGL
 
-OBJS = spinner.o \
+OBJS = text.o \
        ../../common/framebuffer.o \
        ../../common/util.o \
+       ../../../selfdrive/common/touch.o \
        $(PHONELIBS)/nanovg/nanovg.o \
-       ../../common/spinner.o \
-       opensans_semibold.o \
-       img_spinner_track.o \
-       img_spinner_comma.o
+       opensans_regular.o \
 
 DEPS := $(OBJS:.o=.d)
 
 .PHONY: all
-all: spinner
+all: text
 
-spinner: $(OBJS)
+text: $(OBJS)
 	@echo "[ LINK ] $@"
 	$(CXX) -fPIC -o '$@' $^ \
 	      -s \
@@ -41,35 +39,36 @@ spinner: $(OBJS)
         $(OPENGL_LIBS) \
         -lm -llog
 
-../../common/framebuffer.o: ../../common/framebuffer.cc
-	@echo "[ CXX ] $@"
-	$(CXX) $(CXXFLAGS) -MMD \
-           -I$(PHONELIBS)/android_frameworks_native/include \
-           -I$(PHONELIBS)/android_system_core/include \
-           -I$(PHONELIBS)/android_hardware_libhardware/include \
-           -c -o '$@' '$<'
-
-opensans_semibold.o: ../../assets/fonts/opensans_semibold.ttf
-	@echo "[ bin2o ] $@"
-	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
-
-img_spinner_track.o: ../../assets/img_spinner_track.png
-	@echo "[ bin2o ] $@"
-	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
-
-img_spinner_comma.o: ../../assets/img_spinner_comma.png
+opensans_regular.o: ../../assets/fonts/opensans_regular.ttf
 	@echo "[ bin2o ] $@"
 	cd '$(dir $<)' && ld -r -b binary '$(notdir $<)' -o '$(abspath $@)'
 
 %.o: %.c
+	mkdir -p $(@D)
 	@echo "[ CC ] $@"
-	$(CC) $(CFLAGS) -MMD \
+	$(CC) $(CPPFLAGS) $(CFLAGS) \
           -I../.. \
+          -I$(PHONELIBS)/android_frameworks_native/include \
+          -I$(PHONELIBS)/android_system_core/include \
+          -I$(PHONELIBS)/android_hardware_libhardware/include \
           $(NANOVG_FLAGS) \
           -c -o '$@' '$<'
 
+%.o: %.cc
+	mkdir -p $(@D)
+	@echo "[ CXX ] $@"
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) \
+           -I../../selfdrive \
+           -I../../ \
+           -I$(PHONELIBS)/android_frameworks_native/include \
+           -I$(PHONELIBS)/android_system_core/include \
+           -I$(PHONELIBS)/android_hardware_libhardware/include \
+           $(NANOVG_FLAGS) \
+           -c -o '$@' '$<'
+
+
 .PHONY: clean
 clean:
-	rm -f spinner $(OBJS) $(DEPS)
+	rm -f text $(OBJS) $(DEPS)
 
 -include $(DEPS)
