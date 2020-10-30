@@ -69,16 +69,16 @@ def unblock_stdout():
 
 if __name__ == "__main__":
   unblock_stdout()
-  from common.spinner import Spinner
-else:
-  from common.spinner import FakeSpinner as Spinner
+
+from common.spinner import Spinner
+from common.text_window import TextWindow
 
 import importlib
 import traceback
 from multiprocessing import Process
 
 # Run scons
-spinner = Spinner()
+spinner = Spinner(noop=(__name__ != "__main__" or not ANDROID))
 spinner.update("0")
 
 if not prebuilt:
